@@ -57,16 +57,18 @@
                                     <td><?php echo isset($row['mark']) ? $row['mark'] : 'N/A'; ?></td>
                                     <td><?php echo $row['address']; ?></td>
                                     <td><?php echo $row['birthdate']; ?></td>
-                                     <?php 
-                                        $imageJson = $student['images'] ?? '[]';
-                                        $images = json_decode($imageJson, true) ?: [];
-                                            if (!empty($images)): ?>
-                                                <?php foreach ($images as $path): ?>
-                                                <img src="<?= htmlspecialchars($path) ?>" alt="Student Image">
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <p>No images uploaded.</p>
-                                            <?php endif; ?>
+                                    <td>
+                                    <?php
+                                        if (!empty($row['images'])) {
+                                            $images = explode(",", $row['images']);
+                                            foreach ($images as $img) {
+                                                echo "<img src='uploads/$img' width='50' height='50' style='margin-right:5px; border-radius:5px; object-fit:cover;'>";
+                                            }
+                                        } else {
+                                            echo "No images uploaded.";
+                                        }
+                                    ?>
+                                    </td>
                                     <td><a href="?controller=studentController&action=viewData&id=<?= $row['id']; ?>" class="btn btn-info btn-sm">View</a>
                                         <a href="?controller=studentController&action=editStudent&id=<?= $row['id']; ?>" class="btn btn-success btn-sm">Edit</a>
                                         <form action="" method="POST" class="d-inline">

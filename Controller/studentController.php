@@ -8,7 +8,6 @@
         }
 
         public function listing(){
-            $search = isset($_GET['search']) ? $_GET['search'] : '';
             $limit = 5;
             $page = 1;
             if (isset($_GET["page"])) {
@@ -18,19 +17,22 @@
             $result = $this->model->select_data($start_from, $limit);
             $students = [];
             while ($row = $result->fetch_assoc()) {
-                // Decode the JSON array of image paths
-                $row['images'] = json_decode($row['images'] ?? '[]', true) ?: [];
                 $students[] = $row;
             }
+
+            // while ($row = $result->fetch_assoc()) {
+            //     $row['images'] = json_decode($row['images'] ?? '[]', true); // decode from JSON
+            //     $students[] = $row;
+            // }
             $students = $this->model->pagination();
             $page = $students->num_rows;
             $total_pages = ceil($page / $limit);
-            $result = $this->model->getData($start_from, $limit, $search); 
+            $result = $this->model->getData($start_from, $limit); 
             include 'View/students/listing.php';
         }
 
         public function addStudent(){
-            if (isset($_POST['submit'])){	
+           if (isset($_POST['submit'])){	
                 $data = [
                     "name" => $_POST['name'],
                     "email" => $_POST['email'],
@@ -39,8 +41,8 @@
                     "birthdate" => $_POST['birthdate'],
                     "mark" => $_POST['mark']                    
                 ];      
-                
-                $sql = $this->model->createStudent($data);          
+                $files = $_FILES['image'] ?? null;
+                $sql = $this->model->createStudent($data, ['image' => $files]);          
                 if ($sql) {
                     header("location:?controller=studentController&action=listing");
                 } else {
@@ -123,5 +125,4 @@
             exit;
         }
     }
-
 ?>
